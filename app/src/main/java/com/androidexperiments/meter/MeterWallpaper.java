@@ -105,7 +105,7 @@ public class MeterWallpaper extends WallpaperService {
             mVisible = visible;
             if (visible) {
                 mDrawer = new BatteryCircleDrawer(mContext);
-//                mDrawer = new WifiDrawer(mContext);
+//                mDrawer = new BatteryTriangleDrawer(mContext);
                 mDrawer.start();
 
                 // Start the drawing loop

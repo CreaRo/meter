@@ -5,15 +5,14 @@ import android.app.WallpaperManager;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.androidexperiments.meter.fonts.RobotoBoldTypeface;
-import com.androidexperiments.meter.fonts.RobotoLightTypeface;
+import com.androidexperiments.meter.util.RobotoBoldTypeface;
+import com.androidexperiments.meter.util.RobotoLightTypeface;
 
 /**
  * The Main app activity, describes the wallpaper and directs user towards notification settings
@@ -22,10 +21,8 @@ public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    protected Button mNotificationsEnabled;
-    protected Button mSetWallpaperBtn;
-
-
+    protected Button mSettingsButton;
+    protected Button mSetWallpaperButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,24 +30,23 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         //grab button references
-        mNotificationsEnabled = (Button) findViewById(R.id.notificationsEnableButton);
-        mSetWallpaperBtn = (Button) findViewById(R.id.choseWallpaperButton);
+        mSettingsButton = (Button) findViewById(R.id.settingsButton);
+        mSetWallpaperButton = (Button) findViewById(R.id.choseWallpaperButton);
 
         Typeface robotoLight = RobotoLightTypeface.getInstance(this);
         Typeface robotoBold = RobotoBoldTypeface.getInstance(this);
-        mSetWallpaperBtn.setTypeface(robotoBold);
+        mSetWallpaperButton.setTypeface(robotoBold);
 
-        ((TextView)findViewById(R.id.descriptionTextView)).setTypeface(robotoLight);
+        ((TextView) findViewById(R.id.descriptionTextView)).setTypeface(robotoLight);
 
-
-        mNotificationsEnabled.setOnClickListener(new View.OnClickListener() {
+        mSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 moveToNotificationListenerSettings();
             }
         });
 
-        mSetWallpaperBtn.setOnClickListener(new View.OnClickListener() {
+        mSetWallpaperButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER);
@@ -62,8 +58,6 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        //toggle the text on the notification button
-        mNotificationsEnabled.setText(NotificationService.permissionsGranted ? R.string.revoke_access : R.string.give_access);
     }
 
     @Override
@@ -96,7 +90,7 @@ public class MainActivity extends Activity {
      * go to the OS-level notification listener settings
      */
     private void moveToNotificationListenerSettings() {
-        Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
         startActivity(intent);
     }
 

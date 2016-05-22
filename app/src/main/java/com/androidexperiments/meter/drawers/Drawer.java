@@ -13,7 +13,7 @@ import android.hardware.SensorManager;
 
 import java.util.Calendar;
 
-import com.androidexperiments.meter.fonts.RobotoLightTypeface;
+import com.androidexperiments.meter.util.RobotoLightTypeface;
 
 /**
  * Class inherited by the other drawers

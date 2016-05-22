@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.BatteryManager;
 
 import com.androidexperiments.meter.R;
+import com.androidexperiments.meter.util.Theme;
 
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -27,15 +29,15 @@ public class BatteryCircleDrawer extends Drawer {
     double circleSize = 0.7 * 0.5;
 
     // Colors
-    private final int color_battery_background;
-    private final int color_background_decharge;
-    private final int color_foreground_decharge;
+    private final String color_battery_background;
+    private final String color_background_decharge;
+    private final String color_foreground_decharge;
 
-    private final int color_background_charging;
-    private final int color_foreground_charging;
+    private final String color_background_charging;
+    private final String color_foreground_charging;
 
-    private final int color_background_critical;
-    private final int color_foreground_critical;
+    private final String color_background_critical;
+    private final String color_foreground_critical;
 
     private Paint paint = new Paint();
 
@@ -43,12 +45,14 @@ public class BatteryCircleDrawer extends Drawer {
     Vector2D pos, _pos;
     Vector2D vel;
 
-    public BatteryCircleDrawer(Context context) {
-        super(context);
+    Theme theme;
+
+    public BatteryCircleDrawer(Context mContext) {
+        super(mContext);
 
         // Register a receiver for battery state changes
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus = context.registerReceiver(batteryLevelReceiver, ifilter);
+        Intent batteryStatus = mContext.registerReceiver(batteryLevelReceiver, ifilter);
 
         // Read initial battery status
         batteryPct = getBatteryPct(batteryStatus);
@@ -60,19 +64,21 @@ public class BatteryCircleDrawer extends Drawer {
             if (batteryPct <= 0.15) _colorTransitionToCritical = colorTransitionToCritical = 1.0;
         }
 
+        theme = new Theme(mContext);
 
         // Load the colors
-        color_battery_background = context.getResources().getColor(R.color.battery_background);
-        color_background_decharge = context.getResources().getColor(R.color.battery_circle_discharging_background);
-        color_foreground_decharge = context.getResources().getColor(R.color.battery_circle_discharging);
+        color_battery_background = theme.getString(Theme.KEY_color_battery_background);
 
-        color_foreground_critical = context.getResources().getColor(R.color.battery_circle_critical);
-        color_background_critical = context.getResources().getColor(R.color.battery_circle_critical_background);
+        color_background_decharge = theme.getString(Theme.KEY_color_background_decharge);
+        color_foreground_decharge = theme.getString(Theme.KEY_color_foreground_decharge);
 
-        color_background_charging = context.getResources().getColor(R.color.battery_circle_charging_background);
-        color_foreground_charging = context.getResources().getColor(R.color.battery_circle_charging);
+        color_background_charging = theme.getString(Theme.KEY_color_background_charging);
+        color_foreground_charging = theme.getString(Theme.KEY_color_foreground_charging);
 
-        this.textColor = context.getResources().getColor(R.color.battery_text);
+        color_foreground_critical = theme.getString(Theme.KEY_color_foreground_critical);
+        color_background_critical = theme.getString(Theme.KEY_color_background_critical);
+
+        this.textColor = mContext.getResources().getColor(R.color.battery_text);
     }
 
     /**
@@ -162,7 +168,7 @@ public class BatteryCircleDrawer extends Drawer {
         paint.setAntiAlias(true);
 
         // Background
-        paint.setColor(color_battery_background);
+        paint.setColor(getColor(color_battery_background));
         c.drawRect(0, 0, c.getWidth(), c.getHeight(), paint);
 
         int x = c.getWidth() / 2;
@@ -170,14 +176,14 @@ public class BatteryCircleDrawer extends Drawer {
         float _circleSize = (float) (c.getWidth() * circleSize);
 
         // Outer circle
-        int bgCircleColor = interpolateColor(color_background_decharge, color_background_charging, (float) lerp(_colorTransitionToCharged));
-        bgCircleColor = interpolateColor(bgCircleColor, color_background_critical, (float) lerp(_colorTransitionToCritical));
+        int bgCircleColor = interpolateColor(getColor(color_background_decharge), getColor(color_background_charging), (float) lerp(_colorTransitionToCharged));
+        bgCircleColor = interpolateColor(bgCircleColor, getColor(color_background_critical), (float) lerp(_colorTransitionToCritical));
         paint.setColor(bgCircleColor);
         c.drawCircle(x, y, _circleSize, paint);
 
         // Inner circle
-        int fgCircleColor = interpolateColor(color_foreground_decharge, color_foreground_charging, (float) lerp(_colorTransitionToCharged));
-        fgCircleColor = interpolateColor(fgCircleColor, color_foreground_critical, (float) lerp(_colorTransitionToCritical));
+        int fgCircleColor = interpolateColor(getColor(color_foreground_decharge), getColor(color_foreground_charging), (float) lerp(_colorTransitionToCharged));
+        fgCircleColor = interpolateColor(fgCircleColor, getColor(color_foreground_critical), (float) lerp(_colorTransitionToCritical));
         paint.setColor(fgCircleColor);
         c.drawCircle((float) (x + c.getWidth() * pos.getX()), (float) (y + c.getWidth() * pos.getY()), _circleSize * batteryPct, paint);
 
@@ -203,5 +209,9 @@ public class BatteryCircleDrawer extends Drawer {
         int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
         return status == BatteryManager.BATTERY_STATUS_CHARGING ||
                 status == BatteryManager.BATTERY_STATUS_FULL;
+    }
+
+    private int getColor(String color) {
+        return Color.parseColor(color);
     }
 }
