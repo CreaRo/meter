@@ -42,11 +42,25 @@ public class SettingsActivity extends AppCompatActivity {
 
     private ChromaDialog chromaDialog;
 
+    Theme theme;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(SettingsActivity.this);
+
+        theme = new Theme(getBaseContext());
+        /**
+         * Setting colors initially
+         */
+        color_battery_background.setImageDrawable(new ColorDrawable(Color.parseColor(theme.getString(Theme.KEY_color_battery_background))));
+        color_background_decharge.setImageDrawable(new ColorDrawable(Color.parseColor(theme.getString(Theme.KEY_color_background_decharge))));
+        color_foreground_decharge.setImageDrawable(new ColorDrawable(Color.parseColor(theme.getString(Theme.KEY_color_foreground_decharge))));
+        color_background_charging.setImageDrawable(new ColorDrawable(Color.parseColor(theme.getString(Theme.KEY_color_background_charging))));
+        color_foreground_charging.setImageDrawable(new ColorDrawable(Color.parseColor(theme.getString(Theme.KEY_color_foreground_charging))));
+        color_foreground_critical.setImageDrawable(new ColorDrawable(Color.parseColor(theme.getString(Theme.KEY_color_foreground_critical))));
+        color_background_critical.setImageDrawable(new ColorDrawable(Color.parseColor(theme.getString(Theme.KEY_color_background_critical))));
 
     }
 
@@ -87,17 +101,16 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     private void showColorPickerDialog(final String KEY, final ImageView imageView) {
-        final Theme settings = new Theme(getBaseContext());
         chromaDialog = new ChromaDialog.Builder()
-                .initialColor(Color.parseColor(settings.getString(KEY)))
+                .initialColor(Color.parseColor(theme.getString(KEY)))
                 .colorMode(ColorMode.ARGB)
                 .indicatorMode(IndicatorMode.HEX)
                 .onColorSelected(new OnColorSelectedListener() {
                     @Override
                     public void onColorSelected(@ColorInt int color) {
                         String hexColor = String.format("#%06X", (0xFFFFFFFF & color));
-                        settings.save(KEY, hexColor);
-                        imageView.setImageDrawable(new ColorDrawable(Color.parseColor(settings.getString(KEY))));
+                        theme.save(KEY, hexColor);
+                        imageView.setImageDrawable(new ColorDrawable(Color.parseColor(theme.getString(KEY))));
                         chromaDialog.dismiss();
                     }
                 })
