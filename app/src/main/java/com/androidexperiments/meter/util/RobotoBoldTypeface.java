@@ -6,13 +6,11 @@ import android.graphics.Typeface;
 /**
  * Singleton for Roboto Light Typeface
  */
-public class RobotoBoldTypeface
-{
-
+public class RobotoBoldTypeface {
     private static Typeface instance;
 
-    public static Typeface getInstance(Context context){
-        if(instance == null){
+    public static Typeface getInstance(Context context) {
+        if (instance == null) {
             instance = Typeface.createFromAsset(context.getAssets(), "Roboto-Bold.ttf");
         }
 

@@ -9,10 +9,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidexperiments.meter.util.RobotoBoldTypeface;
 import com.androidexperiments.meter.util.RobotoLightTypeface;
+import com.androidexperiments.meter.util.Settings;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * The Main app activity, describes the wallpaper and directs user towards notification settings
@@ -24,10 +31,21 @@ public class MainActivity extends Activity {
     protected Button mSettingsButton;
     protected Button mSetWallpaperButton;
 
+    @Bind(R.id.batteryTriangle)
+    ImageView batteryTriangle;
+
+    @Bind(R.id.batteryCircle)
+    ImageView batteryCircle;
+
+    Settings settings;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
+        settings = new Settings(getApplicationContext());
 
         //grab button references
         mSettingsButton = (Button) findViewById(R.id.settingsButton);
@@ -53,6 +71,19 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }
         });
+
+    }
+
+    @OnClick(R.id.batteryCircle)
+    public void batteryCircleClick() {
+        settings.save(Settings.KEY_MODE_SELECTED, Settings.MODE_CIRCLE);
+        Toast.makeText(getApplicationContext(), "Circle Mode Selected", Toast.LENGTH_LONG).show();
+    }
+
+    @OnClick(R.id.batteryTriangle)
+    public void batteryTriangleClick() {
+        settings.save(Settings.KEY_MODE_SELECTED, Settings.MODE_TRIANGLE);
+        Toast.makeText(getApplicationContext(), "Triangle Mode Selected", Toast.LENGTH_LONG).show();
     }
 
     @Override

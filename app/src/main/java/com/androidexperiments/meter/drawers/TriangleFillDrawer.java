@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
+import com.androidexperiments.meter.util.Theme;
+
 import org.apache.commons.math3.geometry.euclidean.twod.Line;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -42,14 +44,16 @@ public class TriangleFillDrawer extends Drawer {
     private Vector2D sideB = new Vector2D(0, 0);
     private Vector2D pivot = new Vector2D(0, 0);
 
+    private Theme theme;
 
-    public TriangleFillDrawer(Context context, int colorBack, int colorTriBack, int colorTriFore, int colorTriCritical) {
+    public TriangleFillDrawer(Context context) {
         super(context);
-        this.color_background = colorBack;
-        this.color_triangle_background = colorTriBack;
-        this.color_triangle_foreground = colorTriFore;
-        this.color_triangle_critical = colorTriCritical;
-        this.textColor = colorTriBack;
+        theme = new Theme(context);
+        this.color_background = getColor(theme.getString(Theme.KEY_color_battery_background));
+        this.color_triangle_background = getColor(theme.getString(Theme.KEY_color_background_decharge));
+        this.color_triangle_foreground = getColor(theme.getString(Theme.KEY_color_foreground_decharge));
+        this.color_triangle_critical = getColor(theme.getString(Theme.KEY_color_foreground_critical));
+        this.textColor = getColor(theme.getString(Theme.KEY_color_background_decharge));
     }
 
     /**
@@ -317,5 +321,9 @@ public class TriangleFillDrawer extends Drawer {
         }
 
         return false;
+    }
+
+    private int getColor(String color) {
+        return Color.parseColor(color);
     }
 }

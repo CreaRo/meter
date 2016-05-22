@@ -32,7 +32,7 @@
 
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/batteryTriangle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left|top"
@@ -41,7 +41,7 @@
 
 
         <ImageView
-            android:id="@+id/batteryIcon"
+            android:id="@+id/batteryCircle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left|center"

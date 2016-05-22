@@ -8,7 +8,9 @@ import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
 
 import com.androidexperiments.meter.drawers.BatteryCircleDrawer;
+import com.androidexperiments.meter.drawers.BatteryTriangleDrawer;
 import com.androidexperiments.meter.drawers.Drawer;
+import com.androidexperiments.meter.util.Settings;
 
 /**
  * The Live Wallpaper Service and rendering Engine
@@ -104,8 +106,15 @@ public class MeterWallpaper extends WallpaperService {
         public void onVisibilityChanged(boolean visible) {
             mVisible = visible;
             if (visible) {
-                mDrawer = new BatteryCircleDrawer(mContext);
-//                mDrawer = new BatteryTriangleDrawer(mContext);
+                /**
+                 * Check which mode is selected and display that
+                 */
+                Settings settings = new Settings(mContext);
+                if (settings.getString(Settings.KEY_MODE_SELECTED).equals(Settings.MODE_CIRCLE)) {
+                    mDrawer = new BatteryCircleDrawer(mContext);
+                } else {
+                    mDrawer = new BatteryTriangleDrawer(mContext);
+                }
                 mDrawer.start();
 
                 // Start the drawing loop

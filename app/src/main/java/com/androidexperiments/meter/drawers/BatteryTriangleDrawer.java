@@ -15,14 +15,7 @@ public class BatteryTriangleDrawer extends TriangleFillDrawer {
     private final String TAG = this.getClass().getSimpleName();
 
     public BatteryTriangleDrawer(Context context) {
-        super(
-                context,
-                context.getResources().getColor(R.color.notifications_color_3),
-                context.getResources().getColor(R.color.wifi_triangle_background),
-                context.getResources().getColor(R.color.wifi_triangle_foreground),
-                context.getResources().getColor(R.color.wifi_triangle_critical)
-        );
-
+        super(context);
         this.label1 = "Battery";
 
         // Register a receiver for battery state changes
