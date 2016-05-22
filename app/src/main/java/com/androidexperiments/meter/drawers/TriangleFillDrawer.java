@@ -30,9 +30,6 @@ public class TriangleFillDrawer extends Drawer {
     private final int color_triangle_foreground;
     private final int color_triangle_critical;
 
-    protected boolean connected = true;
-    private boolean _connected;
-
     protected Vector2D pos;
     private Vector2D _pos;
     private Vector2D vel;
@@ -40,15 +37,13 @@ public class TriangleFillDrawer extends Drawer {
     private Paint paint = new Paint();
 
 
-    private Vector2D normal = new Vector2D(0,0);
-    private Vector2D sideA = new Vector2D(0,0);
-    private Vector2D sideB = new Vector2D(0,0);
-    private Vector2D pivot = new Vector2D(0,0);
+    private Vector2D normal = new Vector2D(0, 0);
+    private Vector2D sideA = new Vector2D(0, 0);
+    private Vector2D sideB = new Vector2D(0, 0);
+    private Vector2D pivot = new Vector2D(0, 0);
 
 
-
-
-    public TriangleFillDrawer(Context context, int colorBack, int colorTriBack, int colorTriFore, int colorTriCritical){
+    public TriangleFillDrawer(Context context, int colorBack, int colorTriBack, int colorTriFore, int colorTriCritical) {
         super(context);
         this.color_background = colorBack;
         this.color_triangle_background = colorTriBack;
@@ -59,10 +54,11 @@ public class TriangleFillDrawer extends Drawer {
 
     /**
      * builds the vertices, counter-clockwise for a triangle
+     *
      * @param triangleSize
      * @return
      */
-    protected Vector2D[] createTriangleVertices(float triangleSize){
+    protected Vector2D[] createTriangleVertices(float triangleSize) {
 
         Vector2D[] p = new Vector2D[3];
 
@@ -82,12 +78,10 @@ public class TriangleFillDrawer extends Drawer {
     }
 
 
-
-
     /**
      * Function that generates a triangle path
      */
-    protected Path createTriangle(int x, int y, float triangleSize, float height, boolean flip){
+    protected Path createTriangle(int x, int y, float triangleSize, float height, boolean flip) {
         Path path = new Path();
         path.setFillType(Path.FillType.EVEN_ODD);
         triangleSize /= 2;
@@ -99,9 +93,9 @@ public class TriangleFillDrawer extends Drawer {
         p[1] = p[2].add(p[1].subtract(p[2]).scalarMultiply(height));
 
 
-        path.moveTo((float)p[0].getX()+x, (float)p[0].getY()+y);
-        path.lineTo((float)p[1].getX()+x, (float)p[1].getY()+y);
-        path.lineTo((float)p[2].getX()+x, (float)p[2].getY()+y);
+        path.moveTo((float) p[0].getX() + x, (float) p[0].getY() + y);
+        path.lineTo((float) p[1].getX() + x, (float) p[1].getY() + y);
+        path.lineTo((float) p[2].getX() + x, (float) p[2].getY() + y);
         path.close();
 
         return path;
@@ -110,16 +104,16 @@ public class TriangleFillDrawer extends Drawer {
     /**
      * Function that generates a triangle path
      */
-    private Path createInsideTriangle(int x, int y, float triangleSize, float percentFilled, boolean flip){
+    private Path createInsideTriangle(int x, int y, float triangleSize, float percentFilled, boolean flip) {
         Path path = new Path();
         path.setFillType(Path.FillType.EVEN_ODD);
         triangleSize /= 2;
 
         Vector2D[] p = createTriangleVertices(triangleSize);
-        Vector2D center = new Vector2D(0,0);
+        Vector2D center = new Vector2D(0, 0);
 
         //Vector2D pos = new Vector2D(triangleSize,triangleSize);
-        if(pos.distance(center) > 0) {
+        if (pos.distance(center) > 0) {
             //pos = pos.normalize().scalarMultiply(triangleSize);
 
             _pos = pos.scalarMultiply(triangleSize);
@@ -131,7 +125,7 @@ public class TriangleFillDrawer extends Drawer {
 
             //In this case _pos is on the left side
             int opposite = 0;
-            if (dist[1] > dist[0] && dist[1] > dist[2]){
+            if (dist[1] > dist[0] && dist[1] > dist[2]) {
                 //In this case _pos is on the right
 
                 //if _pos distance to top-left is further than top-right
@@ -163,7 +157,7 @@ public class TriangleFillDrawer extends Drawer {
             sideA = a.add(b.subtract(a).scalarMultiply(percentFilled));
             sideB = a.add(c.subtract(a).scalarMultiply(percentFilled));
 
-            if(_pos.distance(b) < _pos.distance(a)){
+            if (_pos.distance(b) < _pos.distance(a)) {
                 sideA = b.add(a.subtract(b).scalarMultiply(percentFilled));
                 sideB = b.add(c.subtract(b).scalarMultiply(percentFilled));
             }
@@ -172,36 +166,36 @@ public class TriangleFillDrawer extends Drawer {
 
             Line othLine = new Line(pivot, pivot.add(oth), 0.001);
 
-            Vector2D ac = othLine.intersection(new Line(a,c,0.001));
-            Vector2D bc = othLine.intersection(new Line(b,c,0.001));
-            Vector2D ab = othLine.intersection(new Line(a,b,0.001));
+            Vector2D ac = othLine.intersection(new Line(a, c, 0.001));
+            Vector2D bc = othLine.intersection(new Line(b, c, 0.001));
+            Vector2D ab = othLine.intersection(new Line(a, b, 0.001));
 
-            float bcDist=0;
-            if(bc != null){
+            float bcDist = 0;
+            if (bc != null) {
                 bcDist = (float) bc.distance(center);
             }
-            float acDist=0;
-            if(ac != null){
+            float acDist = 0;
+            if (ac != null) {
                 acDist = (float) ac.distance(center);
             }
-            float abDist=0;
-            if(ab != null){
+            float abDist = 0;
+            if (ab != null) {
                 abDist = (float) ab.distance(center);
             }
 
             // First case that needs a 4 vertex shape
-            if(ac != null && bc != null && bcDist < triangleSize && acDist < triangleSize) {
+            if (ac != null && bc != null && bcDist < triangleSize && acDist < triangleSize) {
                 path.moveTo((float) a.getX() + x, (float) a.getY() + y);
                 path.lineTo((float) b.getX() + x, (float) b.getY() + y);
                 path.lineTo((float) bc.getX() + x, (float) bc.getY() + y);
                 path.lineTo((float) ac.getX() + x, (float) ac.getY() + y);
                 path.close();
-            } else if(bc != null && ab != null && bcDist < triangleSize && abDist < triangleSize){
+            } else if (bc != null && ab != null && bcDist < triangleSize && abDist < triangleSize) {
                 path.moveTo((float) b.getX() + x, (float) b.getY() + y);
                 path.lineTo((float) bc.getX() + x, (float) bc.getY() + y);
                 path.lineTo((float) ab.getX() + x, (float) ab.getY() + y);
                 path.close();
-            } else if(ac != null && ab != null && acDist < triangleSize && abDist < triangleSize){
+            } else if (ac != null && ab != null && acDist < triangleSize && abDist < triangleSize) {
                 path.moveTo((float) ac.getX() + x, (float) ac.getY() + y);
                 path.lineTo((float) a.getX() + x, (float) a.getY() + y);
                 path.lineTo((float) ab.getX() + x, (float) ab.getY() + y);
@@ -212,8 +206,7 @@ public class TriangleFillDrawer extends Drawer {
     }
 
 
-
-    public void draw(Canvas c){
+    public void draw(Canvas c) {
         super.draw(c);
 
         paint.setAntiAlias(true);
@@ -223,49 +216,35 @@ public class TriangleFillDrawer extends Drawer {
         c.drawRect(0, 0, c.getWidth(), c.getHeight(), paint);
 
 
-        int x = c.getWidth()/2;
-        int y = c.getHeight()/2 - (int)(30f*pixelDensity);
+        int x = c.getWidth() / 2;
+        int y = c.getHeight() / 2 - (int) (30f * pixelDensity);
 
 
-        float triangleSize = (float) (c.getWidth()*0.7);
+        float triangleSize = (float) (c.getWidth() * 0.7);
 
-        if(connected) {
-            // Outer triangle
-            paint.setColor(color_triangle_background);
-            c.drawPath(createTriangle(x, y, triangleSize, 1, false), paint);
 
-            // Inner triangle
-            paint.setColor(color_triangle_foreground);
-            Path insidePath;
-            if(_percent > 0.995){
-                insidePath = createTriangle(x, y, triangleSize, _percent, false);
-                vel = new Vector2D(0,0);
-                pos = new Vector2D(0,1);
-                _pos = new Vector2D(0,1);
-            } else {
-                insidePath = createInsideTriangle(x, y, triangleSize, _percent, false);
-            }
-            c.drawPath(insidePath, paint);
+        // Outer triangle
+        paint.setColor(color_triangle_background);
+        c.drawPath(createTriangle(x, y, triangleSize, 1, false), paint);
+
+        // Inner triangle
+        paint.setColor(color_triangle_foreground);
+        Path insidePath;
+        if (_percent > 0.995) {
+            insidePath = createTriangle(x, y, triangleSize, _percent, false);
+            vel = new Vector2D(0, 0);
+            pos = new Vector2D(0, 1);
+            _pos = new Vector2D(0, 1);
         } else {
-            c.save();
-            c.translate(x, y);
-            c.rotate(180);
-            paint.setColor(color_triangle_critical);
-            c.drawPath(createTriangle(0, 0, triangleSize, 1, true), paint);
-            c.restore();
+            insidePath = createInsideTriangle(x, y, triangleSize, _percent, false);
         }
+        c.drawPath(insidePath, paint);
 
-        // Text
-/*        String labelPost = Integer.toString(Math.round(percent *100))+"%";
-        if(!connected){
-            labelPost = "Not connected";
-        }*/
-
-        if(DEBUG_DRAW){
+        if (DEBUG_DRAW) {
             drawDebug(c, x, y);
         }
 
-        drawText(label1, label2, x, (int) (y + triangleSize/2+10), c);
+        drawText(label1, label2, x, (int) (y + triangleSize / 2 + 10), c);
     }
 
 
@@ -276,47 +255,46 @@ public class TriangleFillDrawer extends Drawer {
         pp.setColor(Color.RED);
         pp.setStyle(Paint.Style.FILL);
         float sz = 20f;
-        c.drawRect((float)sideA.getX()-sz, (float)sideA.getY()-sz, (float)sideA.getX()+sz, (float)sideA.getY()+sz, pp);
+        c.drawRect((float) sideA.getX() - sz, (float) sideA.getY() - sz, (float) sideA.getX() + sz, (float) sideA.getY() + sz, pp);
         pp.setColor(Color.BLUE);
-        c.drawRect((float)sideB.getX()-sz, (float)sideB.getY()-sz, (float)sideB.getX()+sz, (float)sideB.getY()+sz, pp);
+        c.drawRect((float) sideB.getX() - sz, (float) sideB.getY() - sz, (float) sideB.getX() + sz, (float) sideB.getY() + sz, pp);
 
         pp.setColor(Color.GREEN);
-        c.drawRect((float)normal.getX() - sz, (float)normal.getY()-sz, (float)normal.getX() + sz, (float)normal.getY() + sz, pp);
+        c.drawRect((float) normal.getX() - sz, (float) normal.getY() - sz, (float) normal.getX() + sz, (float) normal.getY() + sz, pp);
 
         Vector2D oth = new Vector2D(-normal.getY(), normal.getX());
         //pp.setColor(Color.YELLOW);
         //c.drawRect((float)oth.getX()-sz, (float)oth.getY()-sz, (float)oth.getX()+sz, (float)oth.getY()+sz, pp);
 
         pp.setColor(Color.BLACK);
-        c.drawRect((float)_pos.getX()-sz, (float)_pos.getY()-sz, (float)_pos.getX()+sz, (float)_pos.getY()+sz, pp);
+        c.drawRect((float) _pos.getX() - sz, (float) _pos.getY() - sz, (float) _pos.getX() + sz, (float) _pos.getY() + sz, pp);
 
         pp.setColor(Color.YELLOW);
-        c.drawRect((float)pivot.getX()-sz, (float)pivot.getY()-sz, (float)pivot.getX()+sz, (float)pivot.getY()+sz, pp);
+        c.drawRect((float) pivot.getX() - sz, (float) pivot.getY() - sz, (float) pivot.getX() + sz, (float) pivot.getY() + sz, pp);
 
         c.restore();
 
     }
 
 
-
     /**
      * is the device currently connected to a wifi signal?
+     *
      * @return
      */
-    public boolean isCritical(){
-        return !connected;
+    public boolean isCritical() {
+        return false;
     }
 
 
-
-    public boolean shouldDraw(){
+    public boolean shouldDraw() {
         boolean redraw = super.shouldDraw();
 
-        if(vel == null) vel = new Vector2D(0,0);
-        if(pos == null) pos = new Vector2D(0,1);
-        if(_pos == null) _pos = new Vector2D(0,1);
+        if (vel == null) vel = new Vector2D(0, 0);
+        if (pos == null) pos = new Vector2D(0, 1);
+        if (_pos == null) _pos = new Vector2D(0, 1);
 
-        Vector2D a = new Vector2D(mOrientation[2]*0.01, -mOrientation[1]*0.01);
+        Vector2D a = new Vector2D(mOrientation[2] * 0.01, -mOrientation[1] * 0.01);
         a = a.add(pos.scalarMultiply(-0.01));
 
         vel = vel.scalarMultiply(0.9);
@@ -326,19 +304,14 @@ public class TriangleFillDrawer extends Drawer {
         pos = pos.normalize();
 
 
-        if(_percent != percent){
+        if (_percent != percent) {
             redraw = true;
         }
-        if(_connected != connected){
-            _connected = connected;
-            redraw = true;
-        }
-        if(_pos.distance(pos) > 0.001){
+        if (_pos.distance(pos) > 0.001) {
             _pos = pos;
             redraw = true;
         }
-
-        if(redraw){
+        if (redraw) {
             _percent = (float) animateValue(_percent, percent, 0.003);
             return true;
         }

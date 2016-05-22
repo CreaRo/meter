@@ -7,12 +7,8 @@ import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
 
-import java.util.ArrayList;
-
-import com.androidexperiments.meter.drawers.BatteryDrawer;
-import com.androidexperiments.meter.drawers.CombinedWifiCellularDrawer;
+import com.androidexperiments.meter.drawers.BatteryCircleDrawer;
 import com.androidexperiments.meter.drawers.Drawer;
-import com.androidexperiments.meter.drawers.NotificationsDrawer;
 
 /**
  * The Live Wallpaper Service and rendering Engine
@@ -22,9 +18,6 @@ public class MeterWallpaper extends WallpaperService {
     private final String TAG = this.getClass().getSimpleName();
 
     private Drawer mDrawer;
-
-    // Variable containing the index of the drawer last shown
-    private int mDrawerIndex = -1;
 
     @Override
     public Engine onCreateEngine() {
@@ -37,7 +30,7 @@ public class MeterWallpaper extends WallpaperService {
     /**
      * The wallpaper engine that will handle the rendering
      */
-    private  class WallpaperEngine extends WallpaperService.Engine {
+    private class WallpaperEngine extends WallpaperService.Engine {
 
         public Context mContext;
 
@@ -51,14 +44,14 @@ public class MeterWallpaper extends WallpaperService {
         /**
          * Handle tap commands
          */
-        public Bundle onCommand(String action, int x, int y, int z, Bundle extras, boolean resultRequested){
+        public Bundle onCommand(String action, int x, int y, int z, Bundle extras, boolean resultRequested) {
             //taps work on Nexus devices but not all, for example Samsung
-            if(action.equals("android.wallpaper.tap")){
-                if( mDrawer != null ) {
+            if (action.equals("android.wallpaper.tap")) {
+                if (mDrawer != null) {
                     mDrawer.tap(x, y);
                 }
             }
-            return super.onCommand(action,x,y,z,extras,resultRequested);
+            return super.onCommand(action, x, y, z, extras, resultRequested);
         }
 
         /**
@@ -75,10 +68,10 @@ public class MeterWallpaper extends WallpaperService {
          * Draw function doing the context locking and rendering
          */
         private void draw() {
-            if(mDrawer == null) return;
+            if (mDrawer == null) return;
 
             // Ask the drawer if wants to draw in this frame
-            if(mDrawer.shouldDraw()) {
+            if (mDrawer.shouldDraw()) {
                 SurfaceHolder holder = getSurfaceHolder();
                 Canvas c = null;
                 try {
@@ -104,42 +97,21 @@ public class MeterWallpaper extends WallpaperService {
          * Toggle visibility of the wallpaper
          * In this function we create new drawers every time the wallpaper
          * is visible again, cycling through the available ones
+         *
          * @param visible whether the wallpaper is currently visible
          */
         @Override
         public void onVisibilityChanged(boolean visible) {
             mVisible = visible;
             if (visible) {
-
-                ArrayList<Class> drawerClasses = new ArrayList<Class>();
-
-                //always include wifi + battery
-                drawerClasses.add(CombinedWifiCellularDrawer.class);
-                drawerClasses.add(BatteryDrawer.class);
-                //only include notifications if it has permission
-                if(NotificationService.permissionsGranted){
-                    drawerClasses.add(NotificationsDrawer.class);
-                }
-
-                mDrawerIndex++;
-                if( mDrawerIndex >= drawerClasses.size() ){
-                    mDrawerIndex = 0;
-                }
-                Class cls = drawerClasses.get(mDrawerIndex);
-                if(cls == NotificationsDrawer.class) {
-                    mDrawer = new NotificationsDrawer(mContext);
-                } else if(cls == BatteryDrawer.class) {
-                    mDrawer = new BatteryDrawer(mContext);
-                } else {
-                    mDrawer = new CombinedWifiCellularDrawer(mContext);
-                }
-
+                mDrawer = new BatteryCircleDrawer(mContext);
+//                mDrawer = new WifiDrawer(mContext);
                 mDrawer.start();
+
                 // Start the drawing loop
                 draw();
-
             } else {
-                if( mDrawer != null ) {
+                if (mDrawer != null) {
                     mDrawer.destroy();
                     mDrawer = null;
                 }
@@ -166,7 +138,4 @@ public class MeterWallpaper extends WallpaperService {
             mHandler.removeCallbacks(mUpdateDisplay);
         }
     }
-
 }
-
-
